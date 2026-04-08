@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Réserver une chambre - eHotels</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>eHotels</h1>
+      <p class="subtitle">Créer une réservation</p>
+      <nav class="nav">
+        <a href="index.html">Accueil</a>
+        <a href="search.html">Rechercher</a>
+        <a href="reserve.html">Réserver</a>
+        <a href="rent.html">Louer</a>
+        <a href="convert.html">Convertir</a>
+        <a href="manage-clients.html">Clients</a>
+        <a href="manage-rooms.html">Chambres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h2>Réserver une chambre</h2>
+      <p>Remplissez le formulaire ci-dessous pour créer une réservation.</p>
+    </section>
+
+    <section class="form-section">
+      <form class="reservation-form" id="reservationForm">
+        <div class="form-status" id="reservationStatus" aria-live="polite"></div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nom_complet">Nom complet</label>
+            <input type="text" id="nom_complet" name="nom_complet" placeholder="Entrez le nom complet" required />
+            <p class="field-error" id="nom_complet_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="adresse">Adresse</label>
+            <input type="text" id="adresse" name="adresse" placeholder="Entrez l'adresse" required />
+            <p class="field-error" id="adresse_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="nas">NAS / SSN</label>
+            <input type="text" id="nas" name="nas" placeholder="Entrez le NAS / SSN" required />
+            <p class="field-error" id="nas_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="id_chambre">ID de la chambre</label>
+            <input type="number" id="id_chambre" name="id_chambre" placeholder="Entrez l'ID de la chambre" required />
+            <p class="field-error" id="id_chambre_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="date_debut">Date de début</label>
+            <input type="date" id="date_debut" name="date_debut" required />
+            <p class="field-error" id="date_debut_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="date_fin">Date de fin</label>
+            <input type="date" id="date_fin" name="date_fin" required />
+            <p class="field-error" id="date_fin_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Soumettre la réservation</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="info-panel">
+      <h3>Résumé de la réservation</h3>
+      <div class="summary-list" id="reservationSummary">
+        <p>Complétez le formulaire pour prévisualiser les détails avant l'envoi.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>

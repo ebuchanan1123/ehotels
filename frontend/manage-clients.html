@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gérer les clients - eHotels</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>eHotels</h1>
+      <p class="subtitle">Gérer les dossiers clients à l'aide d'une interface par formulaire</p>
+      <nav class="nav">
+        <a href="index.html">Accueil</a>
+        <a href="search.html">Rechercher</a>
+        <a href="reserve.html">Réserver</a>
+        <a href="rent.html">Louer</a>
+        <a href="convert.html">Convertir</a>
+        <a href="manage-clients.html">Clients</a>
+        <a href="manage-rooms.html">Chambres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h2>Gérer les clients</h2>
+      <p>Créez, mettez à jour et consultez les informations clients sans exposer du SQL.</p>
+    </section>
+
+    <section class="form-section">
+      <form class="management-form" id="clientManagementForm">
+        <div class="form-status" id="clientStatus" aria-live="polite"></div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="client_full_name">Nom complet</label>
+            <input type="text" id="client_full_name" name="client_full_name" placeholder="Entrez le nom complet" required />
+            <p class="field-error" id="client_full_name_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_address">Adresse</label>
+            <input type="text" id="client_address" name="client_address" placeholder="Entrez l'adresse" required />
+            <p class="field-error" id="client_address_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_nas_number">NAS / SSN</label>
+            <input type="text" id="client_nas_number" name="client_nas_number" placeholder="Entrez le NAS / SSN" required />
+            <p class="field-error" id="client_nas_number_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_id_type">Type de pièce d'identité</label>
+            <select id="client_id_type" name="client_id_type" required>
+              <option value="">Sélectionnez un type</option>
+              <option value="passport">Passport</option>
+              <option value="drivers_license">Permis de conduire</option>
+              <option value="national_id">Carte d'identité nationale</option>
+            </select>
+            <p class="field-error" id="client_id_type_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_id_number">Numéro de pièce</label>
+            <input type="text" id="client_id_number" name="client_id_number" placeholder="Entrez le numéro de pièce" required />
+            <p class="field-error" id="client_id_number_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_registration_date">Date d'inscription</label>
+            <input type="date" id="client_registration_date" name="client_registration_date" required />
+            <p class="field-error" id="client_registration_date_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer le client</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">
+        <h3>Clients actuels</h3>
+        <p>Aperçu frontend de la zone de gestion des clients avec ajout, édition et suppression mock.</p>
+      </div>
+
+      <div class="management-grid" id="clientResults"></div>
+    </section>
+
+    <section class="info-panel">
+      <h3>Pourquoi cette page est importante</h3>
+      <p>
+        Cette page soutient la partie gestion des données du projet en donnant aux employés
+        une interface par formulaire pour les dossiers clients, qui pourra plus tard être
+        reliée aux opérations backend de création, de mise à jour et de consultation.
+      </p>
+    </section>
+  </main>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>
