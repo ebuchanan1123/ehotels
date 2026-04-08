@@ -400,11 +400,11 @@ textarea.input-invalid {
 .hotel-card {
   border: 1px solid rgba(39, 76, 119, 0.09);
   border-radius: 24px;
-  padding: 24px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 247, 250, 0.98));
   box-shadow: var(--shadow-sm);
   margin-bottom: 18px;
+  overflow: hidden;
 }
 
 .hotel-card-header {
@@ -413,7 +413,13 @@ textarea.input-invalid {
   gap: 20px;
   align-items: flex-start;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  padding: 24px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.hotel-card-header::-webkit-details-marker {
+  display: none;
 }
 
 .hotel-card-header h4 {
@@ -435,11 +441,41 @@ textarea.input-invalid {
   white-space: nowrap;
 }
 
+.hotel-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.hotel-expand-indicator {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.hotel-card[open] .hotel-expand-indicator {
+  color: var(--heading);
+}
+
+.hotel-card[open] .hotel-expand-indicator::after {
+  content: " ↑";
+}
+
+.hotel-card:not([open]) .hotel-expand-indicator::after {
+  content: " ↓";
+}
+
 .hotel-room-list,
 .management-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
+}
+
+.hotel-room-list {
+  padding: 0 24px 24px;
 }
 
 .room-chip,
@@ -481,6 +517,73 @@ textarea.input-invalid {
   color: var(--text-muted);
 }
 
+.confirmation-hero {
+  padding: 32px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(135deg, rgba(39, 76, 119, 0.95), rgba(71, 118, 170, 0.92)),
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.15), transparent 30%);
+  color: white;
+  box-shadow: var(--shadow-lg);
+}
+
+.confirmation-eyebrow,
+.confirmation-section-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.confirmation-eyebrow {
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 8px;
+}
+
+.confirmation-hero h2 {
+  color: white;
+  margin-bottom: 8px;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.confirmation-lead {
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.confirmation-layout {
+  margin-bottom: 28px;
+}
+
+.confirmation-main {
+  padding-top: 24px;
+}
+
+.confirmation-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.confirmation-header h3 {
+  font-size: 1.8rem;
+}
+
+.confirmation-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+  font-weight: 800;
+}
+
 .summary-list {
   display: grid;
   gap: 10px;
@@ -504,6 +607,70 @@ textarea.input-invalid {
 .summary-value {
   color: var(--text-muted);
   text-align: right;
+}
+
+.selected-room-card {
+  margin-bottom: 22px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(39, 76, 119, 0.1);
+  background: linear-gradient(180deg, rgba(247, 245, 240, 0.92), rgba(255, 255, 255, 0.96));
+  box-shadow: 0 10px 20px rgba(24, 35, 49, 0.04);
+}
+
+.selected-room-card p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.selected-room-card.is-empty,
+.selected-room-card.is-loading {
+  padding: 16px 18px;
+}
+
+.selected-room-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.selected-room-eyebrow {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.selected-room-header h3 {
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+}
+
+.selected-room-subtitle {
+  color: var(--text-muted);
+}
+
+.selected-room-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.selected-room-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(39, 76, 119, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .hero,
@@ -535,7 +702,8 @@ textarea.input-invalid {
   .card,
   .form-section,
   .results-section,
-  .info-panel {
+  .info-panel,
+  .confirmation-hero {
     padding: 22px;
   }
 

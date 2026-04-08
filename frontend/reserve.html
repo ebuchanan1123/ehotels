@@ -18,6 +18,8 @@
         <a href="rent.html">Louer</a>
         <a href="convert.html">Convertir</a>
         <a href="manage-clients.html">Clients</a>
+        <a href="manage-employees.html">Employés</a>
+        <a href="manage-hotels.html">Hôtels</a>
         <a href="manage-rooms.html">Chambres</a>
       </nav>
     </div>
@@ -32,6 +34,10 @@
     <section class="form-section">
       <form class="reservation-form" id="reservationForm">
         <div class="form-status" id="reservationStatus" aria-live="polite"></div>
+
+        <div class="selected-room-card is-empty" id="selectedRoomSummary">
+          <p>Choisissez une chambre depuis la recherche pour voir ses détails ici.</p>
+        </div>
 
         <div class="form-grid">
           <div class="form-group">
@@ -76,13 +82,6 @@
           <button type="reset" class="btn btn-secondary">Effacer</button>
         </div>
       </form>
-    </section>
-
-    <section class="info-panel">
-      <h3>Résumé de la réservation</h3>
-      <div class="summary-list" id="reservationSummary">
-        <p>Complétez le formulaire pour prévisualiser les détails avant l'envoi.</p>
-      </div>
     </section>
   </main>
 

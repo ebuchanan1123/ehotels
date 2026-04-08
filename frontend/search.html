@@ -18,6 +18,8 @@
         <a href="rent.html">Louer</a>
         <a href="convert.html">Convertir</a>
         <a href="manage-clients.html">Clients</a>
+        <a href="manage-employees.html">Employés</a>
+        <a href="manage-hotels.html">Hôtels</a>
         <a href="manage-rooms.html">Chambres</a>
       </nav>
     </div>
@@ -80,10 +82,10 @@
             <label for="categorie">Catégorie</label>
             <select id="categorie" name="categorie">
               <option value="">Peu importe</option>
-              <option value="1">1 étoile</option>
-              <option value="2">2 étoiles</option>
-              <option value="3">3 étoiles</option>
-              <option value="4">4 étoiles</option>
+              <option value="1">1+ étoile</option>
+              <option value="2">2+ étoiles</option>
+              <option value="3">3+ étoiles</option>
+              <option value="4">4+ étoiles</option>
               <option value="5">5 étoiles</option>
             </select>
           </div>
@@ -123,10 +125,9 @@
     <section class="info-panel">
       <h3>Fonctionnement de la recherche</h3>
       <p>
-        Cette page filtre maintenant les résultats directement dans le frontend.
-        Vous pouvez maintenant filtrer par localisation et par hôtel, puis comparer les chambres
-        disponibles regroupées par établissement. Plus tard, les mêmes champs pourront être connectés
-        à votre backend PHP et à vos requêtes PostgreSQL.
+        Cette page interroge maintenant le backend PHP connecté à PostgreSQL.
+        Vous pouvez filtrer par localisation, hôtel, chaîne, catégorie, capacité, prix et dates,
+        puis comparer les chambres disponibles regroupées par établissement.
       </p>
     </section>
   </main>
