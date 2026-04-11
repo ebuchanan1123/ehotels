@@ -305,6 +305,20 @@ function normalize_employee_role(?string $role): string
     };
 }
 
+function normalize_reservation_status(?string $status): string
+{
+    $value = trim((string) ($status ?? ''));
+    $normalized = strtolower(str_replace('é', 'e', $value));
+
+    return match ($normalized) {
+        'reservee' => 'Réservée',
+        'confirmee' => 'Confirmée',
+        'annulee' => 'Annulée',
+        'convertie' => 'Convertie',
+        default => $value !== '' ? ucfirst($value) : '',
+    };
+}
+
 function format_employee_row(array $row): array
 {
     return [

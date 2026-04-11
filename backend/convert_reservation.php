@@ -78,7 +78,7 @@ try {
          WHERE id_reservation = :id_reservation'
     );
     $updateReservation->execute([
-        'statut' => 'convertie',
+        'statut' => 'Convertie',
         'id_reservation' => (int) $reservation['id_reservation'],
     ]);
 
@@ -90,7 +90,7 @@ try {
         'location' => $location,
         'reservation' => [
             'id_reservation' => (int) $reservation['id_reservation'],
-            'statut' => 'convertie',
+            'statut' => 'Convertie',
             'date_debut' => $reservation['date_debut'],
             'date_fin' => $reservation['date_fin'],
             'client_name' => (string) ($reservation['nom_client'] ?? ''),

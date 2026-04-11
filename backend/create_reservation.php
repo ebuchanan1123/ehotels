@@ -31,7 +31,7 @@ try {
         'date_debut' => $payload['date_debut'] ?? null,
         'date_fin' => $payload['date_fin'] ?? null,
         'date_reservation' => date('Y-m-d'),
-        'statut' => 'reservee',
+        'statut' => 'Réservée',
         'id_client' => $clientId,
         'id_chambre' => isset($payload['id_chambre']) ? (int) $payload['id_chambre'] : null,
     ]);
