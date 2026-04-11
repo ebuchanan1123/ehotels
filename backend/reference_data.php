@@ -16,10 +16,19 @@ try {
     )->fetchAll();
 
     $hotels = $pdo->query(
-        'SELECT id_hotel AS id, nom
+        'SELECT id_hotel AS id, nom, id_chaine
          FROM hotel
          ORDER BY nom'
     )->fetchAll();
+
+    $hotels = array_map(
+        static fn (array $hotel): array => [
+            'id' => (int) $hotel['id'],
+            'nom' => (string) $hotel['nom'],
+            'id_chaine' => (int) $hotel['id_chaine'],
+        ],
+        $hotels
+    );
 
     $employees = $pdo->query(
         "SELECT id_employe AS id, nom_complet AS nom, role, id_hotel

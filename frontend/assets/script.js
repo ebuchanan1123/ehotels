@@ -1961,6 +1961,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("employeeManagementForm");
     const status = document.getElementById("employeeStatus");
     const results = document.getElementById("employeeResults");
+    const chainSelect = document.getElementById("employee_chain_id");
     const hotelSelect = document.getElementById("employee_hotel_id");
     const createButton = document.getElementById("openEmployeeCreateModal");
     const createForm = document.getElementById("employeeCreateForm");
@@ -1972,12 +1973,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const editModal = createModalController("employeeEditModal");
     const editHotelSelect = document.getElementById("edit_employee_hotel_id");
 
-    if (!form || !status || !results || !hotelSelect) {
+    if (!form || !status || !results || !hotelSelect || !chainSelect) {
       return;
     }
 
     let employees = [];
-    const fields = ["employee_full_name", "employee_address", "employee_nas", "employee_id_search", "employee_role", "employee_hotel_id"];
+    let hotelsByChain = [];
+    const fields = ["employee_full_name", "employee_address", "employee_nas", "employee_id_search", "employee_role", "employee_chain_id", "employee_hotel_id"];
     const createFields = [
       "create_employee_full_name",
       "create_employee_address",
@@ -2027,6 +2029,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (values.employee_role && normalizeEmployeeRole(employee.role) !== normalizeEmployeeRole(values.employee_role)) {
           return false;
+        }
+
+        if (values.employee_chain_id) {
+          const matchingHotel = hotelsByChain.find((hotel) => `${hotel.id}` === `${employee.hotelId}`);
+
+          if (!matchingHotel || `${matchingHotel.id_chaine}` !== `${values.employee_chain_id}`) {
+            return false;
+          }
         }
 
         if (values.employee_hotel_id && `${employee.hotelId}` !== `${values.employee_hotel_id}`) {
@@ -2227,16 +2237,42 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    const loadHotels = async () => {
-      const references = await getReferenceData();
+    const updateHotelOptions = () => {
+      const selectedChainId = chainSelect.value;
+      const previousHotel = hotelSelect.value;
+      const availableHotels = selectedChainId
+        ? hotelsByChain.filter((hotel) => `${hotel.id_chaine}` === `${selectedChainId}`)
+        : hotelsByChain;
+
       hotelSelect.innerHTML = `
         <option value="">Sélectionnez un hôtel</option>
-        ${(references.hotels || []).map((hotel) => `<option value="${hotel.id}">${hotel.nom}</option>`).join("")}
+        ${availableHotels.map((hotel) => `<option value="${hotel.id}">${hotel.nom}</option>`).join("")}
       `;
-      if (editHotelSelect) {
-        editHotelSelect.innerHTML = hotelSelect.innerHTML;
+
+      if (availableHotels.some((hotel) => `${hotel.id}` === previousHotel)) {
+        hotelSelect.value = previousHotel;
       }
     };
+
+    const loadHotels = async () => {
+      const references = await getReferenceData();
+      hotelsByChain = references.hotels || [];
+      chainSelect.innerHTML = `
+        <option value="">Sélectionnez une chaîne</option>
+        ${(references.chains || []).map((chain) => `<option value="${chain.id}">${chain.nom}</option>`).join("")}
+      `;
+      updateHotelOptions();
+      if (editHotelSelect) {
+        editHotelSelect.innerHTML = `
+          <option value="">Sélectionnez un hôtel</option>
+          ${hotelsByChain.map((hotel) => `<option value="${hotel.id}">${hotel.nom}</option>`).join("")}
+        `;
+      }
+    };
+
+    chainSelect.addEventListener("change", () => {
+      updateHotelOptions();
+    });
 
     const loadEmployees = async () => {
       const payload = await apiRequest("employees.php");
@@ -2248,8 +2284,14 @@ document.addEventListener("DOMContentLoaded", () => {
       window.setTimeout(() => {
         fields.forEach((field) => setFieldError(field, ""));
         clearStatus(status);
-        loadEmployees().catch(() => {});
+        loadHotels()
+          .then(() => loadEmployees())
+          .catch(() => {});
       }, 0);
+    });
+
+    Promise.all([loadHotels(), loadEmployees()]).catch((error) => {
+      results.innerHTML = `<article class="data-card"><p>${error.message}</p></article>`;
     });
 
     editForm?.addEventListener("reset", () => {
@@ -2263,10 +2305,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ].forEach((field) => setFieldError(field, ""));
         clearStatus(editStatus);
       }, 0);
-    });
-
-    Promise.all([loadHotels(), loadEmployees()]).catch((error) => {
-      results.innerHTML = `<article class="data-card"><p>${error.message}</p></article>`;
     });
   };
 
