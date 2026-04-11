@@ -2,15 +2,46 @@
 
 declare(strict_types=1);
 
+function load_local_db_config(): array
+{
+    $localConfigPath = __DIR__ . '/db.local.php';
+
+    if (!is_file($localConfigPath)) {
+        return [];
+    }
+
+    $config = require $localConfigPath;
+
+    return is_array($config) ? $config : [];
+}
+
 function db_config(): array
 {
-    return [
-        'host' => getenv('EHOTELS_DB_HOST') ?: '127.0.0.1',
-        'port' => getenv('EHOTELS_DB_PORT') ?: '5432',
-        'dbname' => getenv('EHOTELS_DB_NAME') ?: 'ehotels',
-        'user' => getenv('EHOTELS_DB_USER') ?: 'dahliasarina',
-        'password' => getenv('EHOTELS_DB_PASSWORD') ?: '',
+    $defaults = [
+        // Leave host/port empty by default so local development can use the
+        // PostgreSQL unix socket and the current macOS user.
+        'host' => '',
+        'port' => '',
+        'dbname' => 'ehotels',
+        'user' => getenv('USER') ?: 'postgres',
+        'password' => '',
     ];
+
+    $localConfig = load_local_db_config();
+
+    $environmentConfig = [
+        'host' => getenv('EHOTELS_DB_HOST') !== false ? getenv('EHOTELS_DB_HOST') : null,
+        'port' => getenv('EHOTELS_DB_PORT') !== false ? getenv('EHOTELS_DB_PORT') : null,
+        'dbname' => getenv('EHOTELS_DB_NAME') !== false ? getenv('EHOTELS_DB_NAME') : null,
+        'user' => getenv('EHOTELS_DB_USER') !== false ? getenv('EHOTELS_DB_USER') : null,
+        'password' => getenv('EHOTELS_DB_PASSWORD') !== false ? getenv('EHOTELS_DB_PASSWORD') : null,
+    ];
+
+    return array_merge(
+        $defaults,
+        array_filter($localConfig, static fn ($value) => $value !== null),
+        array_filter($environmentConfig, static fn ($value) => $value !== null)
+    );
 }
 
 function db_connection(): PDO
@@ -22,12 +53,18 @@ function db_connection(): PDO
     }
 
     $config = db_config();
-    $dsn = sprintf(
-        'pgsql:host=%s;port=%s;dbname=%s',
-        $config['host'],
-        $config['port'],
-        $config['dbname']
-    );
+    $dsnParts = [];
+
+    if ($config['host'] !== '') {
+        $dsnParts[] = sprintf('host=%s', $config['host']);
+    }
+
+    if ($config['port'] !== '') {
+        $dsnParts[] = sprintf('port=%s', $config['port']);
+    }
+
+    $dsnParts[] = sprintf('dbname=%s', $config['dbname']);
+    $dsn = 'pgsql:' . implode(';', $dsnParts);
 
     $pdo = new PDO(
         $dsn,
@@ -160,20 +197,11 @@ function find_or_create_client(PDO $pdo, array $clientData): int
 
     $telephone = preg_replace('/\D+/', '', (string) ($clientData['telephone'] ?? $clientData['nas'] ?? ''));
     $telephone = $telephone !== '' ? $telephone : '0000000000';
-    $email = (string) ($clientData['email'] ?? '');
+    $email = trim((string) ($clientData['email'] ?? ''));
+    $email = $email !== '' ? $email : null;
     $nas = preg_replace('/\D+/', '', trim((string) ($clientData['nas'] ?? '')));
     $dateInscription = (string) ($clientData['date_inscription'] ?? date('Y-m-d'));
     $address = trim((string) ($clientData['adresse'] ?? ''));
-
-    if ($email === '') {
-        $slugNom = strtolower(preg_replace('/[^a-z0-9]+/i', '.', $nom));
-        $slugPrenom = strtolower(preg_replace('/[^a-z0-9]+/i', '.', $prenom));
-        $email = trim($slugPrenom . '.' . $slugNom, '.');
-        if ($nas !== '') {
-          $email .= '.' . substr($nas, -4);
-        }
-        $email .= '@ehotels.local';
-    }
 
     $existingId = false;
 
@@ -264,6 +292,19 @@ function format_client_row(array $row): array
     ];
 }
 
+function normalize_employee_role(?string $role): string
+{
+    $value = trim((string) ($role ?? ''));
+    $normalized = strtolower(str_replace('é', 'e', $value));
+
+    return match ($normalized) {
+        'gestionnaire' => 'Gestionnaire',
+        'reception' => 'Réception',
+        'service' => 'Service',
+        default => $value !== '' ? ucfirst($value) : '',
+    };
+}
+
 function format_employee_row(array $row): array
 {
     return [
@@ -271,7 +312,7 @@ function format_employee_row(array $row): array
         'fullName' => (string) $row['nom_complet'],
         'address' => (string) ($row['adresse'] ?? ''),
         'nas' => (string) ($row['nas'] ?? ''),
-        'role' => (string) $row['role'],
+        'role' => normalize_employee_role((string) ($row['role'] ?? '')),
         'hotelId' => (int) $row['id_hotel'],
         'hotelName' => (string) ($row['hotel_nom'] ?? ''),
     ];
@@ -292,4 +333,66 @@ function format_hotel_row(array $row): array
         'managerId' => isset($row['id_gestionnaire']) ? (int) $row['id_gestionnaire'] : null,
         'managerName' => (string) ($row['gestionnaire_nom'] ?? ''),
     ];
+}
+
+function delete_room_dependencies(PDO $pdo, int $roomId): array
+{
+    $deleteLocations = $pdo->prepare(
+        'DELETE FROM location
+         WHERE id_chambre = :id_chambre'
+    );
+    $deleteLocations->execute([
+        'id_chambre' => $roomId,
+    ]);
+
+    $deleteReservations = $pdo->prepare(
+        'DELETE FROM reservation
+         WHERE id_chambre = :id_chambre'
+    );
+    $deleteReservations->execute([
+        'id_chambre' => $roomId,
+    ]);
+
+    return [
+        'locationsDeleted' => $deleteLocations->rowCount(),
+        'reservationsDeleted' => $deleteReservations->rowCount(),
+    ];
+}
+
+function delete_hotel_dependencies(PDO $pdo, int $hotelId): array
+{
+    $roomIdsStatement = $pdo->prepare(
+        'SELECT id_chambre
+         FROM chambre
+         WHERE id_hotel = :id_hotel'
+    );
+    $roomIdsStatement->execute([
+        'id_hotel' => $hotelId,
+    ]);
+
+    $roomIds = array_map(
+        static fn (array $row): int => (int) $row['id_chambre'],
+        $roomIdsStatement->fetchAll()
+    );
+
+    $locationsDeleted = 0;
+    $reservationsDeleted = 0;
+
+    foreach ($roomIds as $roomId) {
+        $counts = delete_room_dependencies($pdo, $roomId);
+        $locationsDeleted += $counts['locationsDeleted'];
+        $reservationsDeleted += $counts['reservationsDeleted'];
+    }
+
+    return [
+        'roomIds' => $roomIds,
+        'roomsDeleted' => count($roomIds),
+        'locationsDeleted' => $locationsDeleted,
+        'reservationsDeleted' => $reservationsDeleted,
+    ];
+}
+
+function pg_bool_param(bool $value): string
+{
+    return $value ? 'true' : 'false';
 }

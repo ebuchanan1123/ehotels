@@ -39,10 +39,41 @@ try {
 
     if ($method === 'DELETE') {
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        if ($id <= 0) {
+            json_response(['error' => 'ID d’hôtel invalide.'], 400);
+        }
+
+        $pdo->beginTransaction();
+
+        $existingHotel = $pdo->prepare(
+            'SELECT id_hotel
+             FROM hotel
+             WHERE id_hotel = :id
+             LIMIT 1'
+        );
+        $existingHotel->execute(['id' => $id]);
+
+        if (!$existingHotel->fetch()) {
+            $pdo->rollBack();
+            json_response(['deleted' => false], 404);
+        }
+
+        $dependencyCounts = delete_hotel_dependencies($pdo, $id);
+
         $statement = $pdo->prepare('DELETE FROM hotel WHERE id_hotel = :id');
         $statement->execute(['id' => $id]);
 
-        json_response(['deleted' => $statement->rowCount() > 0]);
+        $pdo->commit();
+
+        json_response([
+            'deleted' => $statement->rowCount() > 0,
+            'cascade' => [
+                'roomsDeleted' => $dependencyCounts['roomsDeleted'],
+                'reservationsDeleted' => $dependencyCounts['reservationsDeleted'],
+                'locationsDeleted' => $dependencyCounts['locationsDeleted'],
+            ],
+        ]);
     }
 
     if (!in_array($method, ['POST', 'PUT'], true)) {
@@ -50,33 +81,38 @@ try {
     }
 
     $payload = read_json_body();
-    $params = [
-        'nom' => (string) ($payload['name'] ?? ''),
-        'categorie' => isset($payload['category']) ? (int) $payload['category'] : null,
-        'adresse' => (string) ($payload['address'] ?? ''),
-        'email' => (string) ($payload['email'] ?? ''),
-        'telephone' => (string) ($payload['phone'] ?? ''),
-        'id_chaine' => isset($payload['chainId']) ? (int) $payload['chainId'] : null,
-        'id_gestionnaire' => !empty($payload['managerId']) ? (int) $payload['managerId'] : null,
-    ];
 
     $pdo->beginTransaction();
 
     if (!empty($payload['id'])) {
-        $params['id_hotel'] = (int) $payload['id'];
+        $params = [
+            'id_hotel' => (int) $payload['id'],
+            'categorie' => isset($payload['category']) ? (int) $payload['category'] : null,
+            'adresse' => (string) ($payload['address'] ?? ''),
+            'email' => (string) ($payload['email'] ?? ''),
+            'telephone' => (string) ($payload['phone'] ?? ''),
+            'id_gestionnaire' => !empty($payload['managerId']) ? (int) $payload['managerId'] : null,
+        ];
         $statement = $pdo->prepare(
             'UPDATE hotel
-             SET nom = :nom,
-                 categorie = :categorie,
+             SET categorie = :categorie,
                  adresse = :adresse,
                  email = :email,
                  telephone = :telephone,
-                 id_chaine = :id_chaine,
                  id_gestionnaire = :id_gestionnaire
              WHERE id_hotel = :id_hotel
              RETURNING id_hotel, nom, categorie, adresse, email, telephone, nb_chambres, id_chaine, id_gestionnaire'
         );
     } else {
+        $params = [
+            'nom' => (string) ($payload['name'] ?? ''),
+            'categorie' => isset($payload['category']) ? (int) $payload['category'] : null,
+            'adresse' => (string) ($payload['address'] ?? ''),
+            'email' => (string) ($payload['email'] ?? ''),
+            'telephone' => (string) ($payload['phone'] ?? ''),
+            'id_chaine' => isset($payload['chainId']) ? (int) $payload['chainId'] : null,
+            'id_gestionnaire' => !empty($payload['managerId']) ? (int) $payload['managerId'] : null,
+        ];
         $statement = $pdo->prepare(
             'INSERT INTO hotel (nom, categorie, adresse, email, telephone, nb_chambres, id_chaine, id_gestionnaire)
              VALUES (:nom, :categorie, :adresse, :email, :telephone, 0, :id_chaine, :id_gestionnaire)
@@ -97,7 +133,7 @@ try {
             'nom_complet' => 'Gestionnaire ' . $hotel['nom'],
             'adresse' => $hotel['adresse'],
             'nas' => 'EMP' . str_pad((string) $hotel['id_hotel'], 6, '0', STR_PAD_LEFT) . 'G',
-            'role' => 'gestionnaire',
+            'role' => 'Gestionnaire',
             'id_hotel' => (int) $hotel['id_hotel'],
         ]);
         $manager = $defaultManager->fetch();

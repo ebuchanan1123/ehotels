@@ -11,16 +11,25 @@
     <div class="container">
       <h1>eHotels</h1>
       <p class="subtitle">Système de recherche, de réservation, de location et de gestion hôtelière</p>
-      <nav class="nav">
+      <nav class="nav nav-organized">
         <a href="index.html">Accueil</a>
-        <a href="search.html">Rechercher</a>
-        <a href="reserve.html">Réserver</a>
-        <a href="rent.html">Louer</a>
-        <a href="convert.html">Convertir</a>
-        <a href="manage-clients.html">Clients</a>
-        <a href="manage-employees.html">Employés</a>
-        <a href="manage-hotels.html">Hôtels</a>
-        <a href="manage-rooms.html">Chambres</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -35,60 +44,68 @@
           données de l'hôtel dans une interface claire.
         </p>
         <div class="hero-buttons">
-          <a class="btn btn-primary" href="search.html">Rechercher une chambre</a>
-          <a class="btn btn-secondary" href="reserve.html">Créer une réservation</a>
+          <a class="btn btn-primary" href="rechercher.html">Rechercher une chambre</a>
         </div>
       </div>
     </section>
 
-    <section class="cards">
-      <article class="card">
-        <h3>Recherche de chambres</h3>
-        <p>Trouvez des chambres avec des filtres comme la date, la chaîne, la catégorie, le prix et la capacité.</p>
-        <a class="card-link" href="search.html">Ouvrir la page</a>
-      </article>
+    <section class="section-block">
+      <div class="section-heading">
+        <h3>Espace client</h3>
+      </div>
 
-      <article class="card">
-        <h3>Créer une réservation</h3>
-        <p>Enregistrez une réservation de chambre pour un client à l'aide d'un formulaire structuré.</p>
-        <a class="card-link" href="reserve.html">Ouvrir la page</a>
-      </article>
+      <div class="cards">
+        <article class="card">
+          <h3>Recherche de chambres</h3>
+          <p>Trouvez des chambres avec des filtres comme la date, la chaîne, la catégorie, le prix et la capacité.</p>
+          <a class="card-link" href="rechercher.html">Ouvrir la page</a>
+        </article>
+      </div>
+    </section>
 
-      <article class="card">
-        <h3>Location directe</h3>
-        <p>Créez une location directement pour un client sans réservation préalable.</p>
-        <a class="card-link" href="rent.html">Ouvrir la page</a>
-      </article>
+    <section class="section-block">
+      <div class="section-heading">
+        <h3>Espace employé</h3>
+      </div>
 
-      <article class="card">
-        <h3>Convertir une réservation</h3>
-        <p>Convertissez une réservation existante en location lors de l'arrivée.</p>
-        <a class="card-link" href="convert.html">Ouvrir la page</a>
-      </article>
+      <div class="cards">
+        <article class="card">
+          <h3>Location directe</h3>
+          <p>Créez une location directement pour un client sans réservation préalable.</p>
+          <a class="card-link" href="louer.html">Ouvrir la page</a>
+        </article>
 
-      <article class="card">
-        <h3>Gérer les clients</h3>
-        <p>Créez et mettez à jour les dossiers clients à l'aide d'un formulaire simple destiné aux employés.</p>
-        <a class="card-link" href="manage-clients.html">Ouvrir la page</a>
-      </article>
+        <article class="card">
+          <h3>Réservations existantes</h3>
+          <p>Consultez les réservations déjà enregistrées et leur statut courant.</p>
+          <a class="card-link" href="reservations.html">Ouvrir la page</a>
+        </article>
 
-      <article class="card">
-        <h3>Gérer les employés</h3>
-        <p>Administrez les employés et assignez les gestionnaires responsables de chaque hôtel.</p>
-        <a class="card-link" href="manage-employees.html">Ouvrir la page</a>
-      </article>
+        <article class="card">
+          <h3>Locations existantes</h3>
+          <p>Consultez les locations enregistrées, leur employé responsable et leur réservation source.</p>
+          <a class="card-link" href="locations.html">Ouvrir la page</a>
+        </article>
 
-      <article class="card">
-        <h3>Gérer les hôtels</h3>
-        <p>Maintenez les hôtels, leur chaîne, leur catégorie et leur gestionnaire dans la base réelle.</p>
-        <a class="card-link" href="manage-hotels.html">Ouvrir la page</a>
-      </article>
+        <article class="card">
+          <h3>Gérer les clients</h3>
+          <p>Créez et mettez à jour les dossiers clients à l'aide d'un formulaire simple destiné aux employés.</p>
+          <a class="card-link" href="clients.html">Ouvrir la page</a>
+        </article>
 
-      <article class="card">
-        <h3>Gérer les chambres</h3>
-        <p>Maintenez les informations des chambres comme la catégorie, la capacité, la superficie et le prix.</p>
-        <a class="card-link" href="manage-rooms.html">Ouvrir la page</a>
-      </article>
+        <article class="card">
+          <h3>Gérer les employés</h3>
+          <p>Administrez les employés et assignez les gestionnaires responsables de chaque hôtel.</p>
+          <a class="card-link" href="employes.html">Ouvrir la page</a>
+        </article>
+
+        <article class="card">
+          <h3>Gérer les hôtels</h3>
+          <p>Maintenez les hôtels, leur chaîne, leur catégorie et leur gestionnaire dans la base réelle.</p>
+          <a class="card-link" href="hotels.html">Ouvrir la page</a>
+        </article>
+
+      </div>
     </section>
   </main>
 

@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
 
+function normalize_optional_text(mixed $value): ?string
+{
+    $normalized = trim((string) ($value ?? ''));
+    return $normalized === '' ? null : $normalized;
+}
+
+function normalize_required_text(mixed $value): string
+{
+    return trim((string) ($value ?? ''));
+}
+
 try {
     $pdo = db_connection();
     $method = $_SERVER['REQUEST_METHOD'];
@@ -38,36 +49,43 @@ try {
 
     $payload = read_json_body();
     [$nom, $prenom] = split_full_name((string) ($payload['fullName'] ?? ''));
+    $email = normalize_required_text($payload['email'] ?? '');
 
-    $params = [
-        'nom' => $nom,
-        'prenom' => $prenom,
-        'adresse' => (string) ($payload['address'] ?? ''),
-        'email' => (string) ($payload['email'] ?? ''),
-        'telephone' => (string) ($payload['phone'] ?? preg_replace('/\D+/', '', (string) ($payload['nas'] ?? ''))),
-        'nas' => (string) ($payload['nas'] ?? ''),
-        'date_inscription' => (string) ($payload['registrationDate'] ?? date('Y-m-d')),
-        'type_piece_identite' => (string) ($payload['idType'] ?? 'unknown'),
-        'numero_piece_identite' => (string) ($payload['idNumber'] ?? ''),
-    ];
+    if ($email === '') {
+        json_response(['error' => 'Le courriel est obligatoire.'], 400);
+    }
 
     if (!empty($payload['id'])) {
-        $params['id_client'] = (int) $payload['id'];
+        $params = [
+            'id_client' => (int) $payload['id'],
+            'adresse' => normalize_required_text($payload['address'] ?? ''),
+            'email' => $email,
+            'telephone' => normalize_optional_text($payload['phone'] ?? ''),
+            'type_piece_identite' => normalize_optional_text($payload['idType'] ?? ''),
+            'numero_piece_identite' => normalize_optional_text($payload['idNumber'] ?? ''),
+        ];
         $statement = $pdo->prepare(
             'UPDATE client
-             SET nom = :nom,
-                 prenom = :prenom,
-                 adresse = :adresse,
+             SET adresse = :adresse,
                  email = :email,
                  telephone = :telephone,
-                 nas = :nas,
-                 date_inscription = :date_inscription,
-                 type_piece_identite = :type_piece_identite,
-                 numero_piece_identite = :numero_piece_identite
+                 type_piece_identite = COALESCE(NULLIF(:type_piece_identite, \'\'), type_piece_identite),
+                 numero_piece_identite = COALESCE(NULLIF(:numero_piece_identite, \'\'), numero_piece_identite)
              WHERE id_client = :id_client
              RETURNING id_client, nom, prenom, adresse, email, telephone, nas, date_inscription, type_piece_identite, numero_piece_identite'
         );
     } else {
+        $params = [
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'adresse' => normalize_required_text($payload['address'] ?? ''),
+            'email' => $email,
+            'telephone' => normalize_optional_text($payload['phone'] ?? preg_replace('/\D+/', '', (string) ($payload['nas'] ?? ''))),
+            'nas' => normalize_required_text($payload['nas'] ?? ''),
+            'date_inscription' => (string) ($payload['registrationDate'] ?? date('Y-m-d')),
+            'type_piece_identite' => normalize_optional_text($payload['idType'] ?? 'national_id'),
+            'numero_piece_identite' => normalize_optional_text($payload['idNumber'] ?? (string) ($payload['nas'] ?? '')),
+        ];
         $statement = $pdo->prepare(
             'INSERT INTO client (nom, prenom, adresse, email, telephone, nas, date_inscription, type_piece_identite, numero_piece_identite)
              VALUES (:nom, :prenom, :adresse, :email, :telephone, :nas, :date_inscription, :type_piece_identite, :numero_piece_identite)
@@ -79,6 +97,17 @@ try {
     json_response([
         'client' => format_client_row($statement->fetch()),
     ], empty($payload['id']) ? 201 : 200);
+} catch (PDOException $exception) {
+    if ($exception->getCode() === '23505' && str_contains($exception->getMessage(), 'client_email_key')) {
+        json_response([
+            'error' => 'Ce courriel est déjà utilisé par un autre client.',
+        ], 409);
+    }
+
+    json_response([
+        'error' => 'Impossible de gérer les clients.',
+        'details' => $exception->getMessage(),
+    ], 500);
 } catch (Throwable $exception) {
     json_response([
         'error' => 'Impossible de gérer les clients.',

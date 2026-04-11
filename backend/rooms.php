@@ -48,10 +48,40 @@ try {
 
     if ($method === 'DELETE') {
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        if ($id <= 0) {
+            json_response(['error' => 'ID de chambre invalide.'], 400);
+        }
+
+        $pdo->beginTransaction();
+
+        $existingRoom = $pdo->prepare(
+            'SELECT id_chambre
+             FROM chambre
+             WHERE id_chambre = :id
+             LIMIT 1'
+        );
+        $existingRoom->execute(['id' => $id]);
+
+        if (!$existingRoom->fetch()) {
+            $pdo->rollBack();
+            json_response(['deleted' => false], 404);
+        }
+
+        $dependencyCounts = delete_room_dependencies($pdo, $id);
+
         $statement = $pdo->prepare('DELETE FROM chambre WHERE id_chambre = :id');
         $statement->execute(['id' => $id]);
 
-        json_response(['deleted' => $statement->rowCount() > 0]);
+        $pdo->commit();
+
+        json_response([
+            'deleted' => $statement->rowCount() > 0,
+            'cascade' => [
+                'reservationsDeleted' => $dependencyCounts['reservationsDeleted'],
+                'locationsDeleted' => $dependencyCounts['locationsDeleted'],
+            ],
+        ]);
     }
 
     if (!in_array($method, ['POST', 'PUT'], true)) {
@@ -65,43 +95,57 @@ try {
         'family' => 4,
     ];
 
-    $params = [
-        'numero' => isset($payload['roomNumber']) ? (int) $payload['roomNumber'] : (isset($payload['id']) ? (int) $payload['id'] : null),
-        'capacite' => $capacityMap[$payload['capacity'] ?? 'double'] ?? max(1, (int) ($payload['capacityValue'] ?? 2)),
-        'prix' => (float) ($payload['price'] ?? 0),
-        'vue_mer' => in_array(strtolower((string) ($payload['view'] ?? '')), ['mer', 'vue mer', 'ocean'], true),
-        'etendue' => !empty($payload['extendable']) && in_array((string) $payload['extendable'], ['yes', 'true', '1'], true),
-        'id_hotel' => isset($payload['hotelId']) ? (int) $payload['hotelId'] : null,
-        'commodites' => (string) ($payload['amenities'] ?? 'Wi-Fi, TV, climatisation'),
-        'vue' => (string) ($payload['view'] ?? 'Ville'),
-        'lit_additionnel' => !empty($payload['extendable']) && in_array((string) $payload['extendable'], ['yes', 'true', '1'], true),
-        'etat' => (string) ($payload['state'] ?? 'Excellent'),
-        'superficie' => (float) ($payload['area'] ?? 0),
-        'nombre_chambres' => isset($payload['roomCount']) ? (int) $payload['roomCount'] : 1,
-        'nom_chambre' => (string) ($payload['name'] ?? ''),
-    ];
-
     if (!empty($payload['id'])) {
-        $params['id_chambre'] = (int) $payload['id'];
+        $hasSeaView = in_array(strtolower((string) ($payload['view'] ?? '')), ['mer', 'vue mer', 'ocean'], true);
+        $isExtendable = !empty($payload['extendable']) && in_array((string) $payload['extendable'], ['yes', 'true', '1'], true);
+
+        $params = [
+            'id_chambre' => (int) $payload['id'],
+            'capacite' => $capacityMap[$payload['capacity'] ?? 'double'] ?? max(1, (int) ($payload['capacityValue'] ?? 2)),
+            'prix' => (float) ($payload['price'] ?? 0),
+            'vue_mer' => pg_bool_param($hasSeaView),
+            'etendue' => pg_bool_param($isExtendable),
+            'commodites' => (string) ($payload['amenities'] ?? 'Wi-Fi, TV, climatisation'),
+            'vue' => (string) ($payload['view'] ?? 'Ville'),
+            'lit_additionnel' => pg_bool_param($isExtendable),
+            'etat' => (string) ($payload['state'] ?? 'Excellent'),
+            'superficie' => (float) ($payload['area'] ?? 0),
+            'nombre_chambres' => isset($payload['roomCount']) ? (int) $payload['roomCount'] : 1,
+        ];
         $statement = $pdo->prepare(
             'UPDATE chambre
-             SET numero = :numero,
-                 capacite = :capacite,
+             SET capacite = :capacite,
                  prix = :prix,
                  vue_mer = :vue_mer,
                  etendue = :etendue,
-                 id_hotel = :id_hotel,
                  commodites = :commodites,
                  vue = :vue,
                  lit_additionnel = :lit_additionnel,
                  etat = :etat,
                  superficie = :superficie,
-                 nombre_chambres = :nombre_chambres,
-                 nom_chambre = :nom_chambre
+                 nombre_chambres = :nombre_chambres
              WHERE id_chambre = :id_chambre
              RETURNING *'
         );
     } else {
+        $hasSeaView = in_array(strtolower((string) ($payload['view'] ?? '')), ['mer', 'vue mer', 'ocean'], true);
+        $isExtendable = !empty($payload['extendable']) && in_array((string) $payload['extendable'], ['yes', 'true', '1'], true);
+
+        $params = [
+            'numero' => isset($payload['roomNumber']) ? (int) $payload['roomNumber'] : (isset($payload['id']) ? (int) $payload['id'] : null),
+            'capacite' => $capacityMap[$payload['capacity'] ?? 'double'] ?? max(1, (int) ($payload['capacityValue'] ?? 2)),
+            'prix' => (float) ($payload['price'] ?? 0),
+            'vue_mer' => pg_bool_param($hasSeaView),
+            'etendue' => pg_bool_param($isExtendable),
+            'id_hotel' => isset($payload['hotelId']) ? (int) $payload['hotelId'] : null,
+            'commodites' => (string) ($payload['amenities'] ?? 'Wi-Fi, TV, climatisation'),
+            'vue' => (string) ($payload['view'] ?? 'Ville'),
+            'lit_additionnel' => pg_bool_param($isExtendable),
+            'etat' => (string) ($payload['state'] ?? 'Excellent'),
+            'superficie' => (float) ($payload['area'] ?? 0),
+            'nombre_chambres' => isset($payload['roomCount']) ? (int) $payload['roomCount'] : 1,
+            'nom_chambre' => (string) ($payload['name'] ?? ''),
+        ];
         $statement = $pdo->prepare(
             'INSERT INTO chambre (numero, capacite, prix, vue_mer, etendue, id_hotel, commodites, vue, lit_additionnel, etat, superficie, nombre_chambres, nom_chambre)
              VALUES (:numero, :capacite, :prix, :vue_mer, :etendue, :id_hotel, :commodites, :vue, :lit_additionnel, :etat, :superficie, :nombre_chambres, :nom_chambre)

@@ -13,9 +13,21 @@ try {
     $pdo->beginTransaction();
 
     $reservationQuery = $pdo->prepare(
-        'SELECT id_reservation, id_client, id_chambre, date_debut, date_fin, statut
-         FROM reservation
-         WHERE id_reservation = :id_reservation
+        'SELECT
+             r.id_reservation,
+             r.id_client,
+             r.id_chambre,
+             r.date_debut,
+             r.date_fin,
+             r.statut,
+             TRIM(COALESCE(c.nom, \'\') || \' \' || COALESCE(c.prenom, \'\')) AS nom_client,
+             COALESCE(ch.nom_chambre, \'Chambre\') AS nom_chambre,
+             COALESCE(h.nom, \'Hôtel\') AS nom_hotel
+         FROM reservation r
+         INNER JOIN client c ON c.id_client = r.id_client
+         INNER JOIN chambre ch ON ch.id_chambre = r.id_chambre
+         INNER JOIN hotel h ON h.id_hotel = ch.id_hotel
+         WHERE r.id_reservation = :id_reservation
          LIMIT 1'
     );
     $reservationQuery->execute([
@@ -79,6 +91,12 @@ try {
         'reservation' => [
             'id_reservation' => (int) $reservation['id_reservation'],
             'statut' => 'convertie',
+            'date_debut' => $reservation['date_debut'],
+            'date_fin' => $reservation['date_fin'],
+            'client_name' => (string) ($reservation['nom_client'] ?? ''),
+            'room_id' => (int) $reservation['id_chambre'],
+            'room_name' => (string) ($reservation['nom_chambre'] ?? 'Chambre'),
+            'hotel_name' => (string) ($reservation['nom_hotel'] ?? 'Hôtel'),
         ],
     ]);
 } catch (Throwable $exception) {

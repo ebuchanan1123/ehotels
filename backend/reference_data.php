@@ -27,6 +27,16 @@ try {
          ORDER BY nom_complet"
     )->fetchAll();
 
+    $employees = array_map(
+        static fn (array $employee): array => [
+            'id' => (int) $employee['id'],
+            'nom' => (string) $employee['nom'],
+            'role' => normalize_employee_role((string) ($employee['role'] ?? '')),
+            'id_hotel' => (int) $employee['id_hotel'],
+        ],
+        $employees
+    );
+
     json_response([
         'chains' => $chains,
         'hotels' => $hotels,

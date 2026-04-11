@@ -38,27 +38,31 @@ try {
     }
 
     $payload = read_json_body();
-    $params = [
-        'nom_complet' => (string) ($payload['fullName'] ?? ''),
-        'adresse' => (string) ($payload['address'] ?? ''),
-        'nas' => (string) ($payload['nas'] ?? ''),
-        'role' => (string) ($payload['role'] ?? 'employe'),
-        'id_hotel' => isset($payload['hotelId']) ? (int) $payload['hotelId'] : null,
-    ];
+    $normalizedRole = normalize_employee_role((string) ($payload['role'] ?? ''));
 
     if (!empty($payload['id'])) {
-        $params['id_employe'] = (int) $payload['id'];
+        $params = [
+            'id_employe' => (int) $payload['id'],
+            'adresse' => (string) ($payload['address'] ?? ''),
+            'role' => $normalizedRole !== '' ? $normalizedRole : 'Service',
+            'id_hotel' => isset($payload['hotelId']) ? (int) $payload['hotelId'] : null,
+        ];
         $statement = $pdo->prepare(
             'UPDATE employe
-             SET nom_complet = :nom_complet,
-                 adresse = :adresse,
-                 nas = :nas,
+             SET adresse = :adresse,
                  role = :role,
                  id_hotel = :id_hotel
              WHERE id_employe = :id_employe
              RETURNING id_employe, nom_complet, adresse, nas, role, id_hotel'
         );
     } else {
+        $params = [
+            'nom_complet' => (string) ($payload['fullName'] ?? ''),
+            'adresse' => (string) ($payload['address'] ?? ''),
+            'nas' => (string) ($payload['nas'] ?? ''),
+            'role' => $normalizedRole !== '' ? $normalizedRole : 'Service',
+            'id_hotel' => isset($payload['hotelId']) ? (int) $payload['hotelId'] : null,
+        ];
         $statement = $pdo->prepare(
             'INSERT INTO employe (nom_complet, adresse, nas, role, id_hotel)
              VALUES (:nom_complet, :adresse, :nas, :role, :id_hotel)
@@ -70,7 +74,7 @@ try {
     $statement->execute($params);
     $employee = $statement->fetch();
 
-    if (($payload['role'] ?? '') === 'gestionnaire') {
+    if (($employee['role'] ?? '') === 'Gestionnaire') {
         $setManager = $pdo->prepare(
             'UPDATE hotel
              SET id_gestionnaire = :id_employe

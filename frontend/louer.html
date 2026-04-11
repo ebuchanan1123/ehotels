@@ -11,16 +11,25 @@
     <div class="container">
       <h1>eHotels</h1>
       <p class="subtitle">Créer une location directe sans réservation préalable</p>
-      <nav class="nav">
+      <nav class="nav nav-organized">
         <a href="index.html">Accueil</a>
-        <a href="search.html">Rechercher</a>
-        <a href="reserve.html">Réserver</a>
-        <a href="rent.html">Louer</a>
-        <a href="convert.html">Convertir</a>
-        <a href="manage-clients.html">Clients</a>
-        <a href="manage-employees.html">Employés</a>
-        <a href="manage-hotels.html">Hôtels</a>
-        <a href="manage-rooms.html">Chambres</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -92,18 +101,10 @@
       </form>
     </section>
 
-    <section class="info-panel">
-      <h3>Remarques</h3>
-      <p>
-        Cette page reflète l'exigence du projet selon laquelle un client peut louer directement
-        sans réservation préalable, et qu'un employé est responsable du processus.
-      </p>
-    </section>
-
-    <section class="info-panel">
+    <section class="info-panel is-hidden" id="rentalSummarySection" hidden>
       <h3>Résumé de la location</h3>
       <div class="summary-list" id="rentalSummary">
-        <p>Complétez le formulaire pour prévisualiser les détails avant l'envoi.</p>
+        <p>Les détails de la location confirmée s'afficheront ici.</p>
       </div>
     </section>
   </main>
