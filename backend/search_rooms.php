@@ -40,7 +40,7 @@ try {
                   SELECT 1
                   FROM reservation r
                   WHERE r.id_chambre = c.id_chambre
-                    AND COALESCE(LOWER(r.statut), '') <> 'annulee'
+                    AND REPLACE(COALESCE(LOWER(r.statut), ''), 'é', 'e') <> 'annulee'
                     AND daterange(r.date_debut, r.date_fin, '[]') && daterange(:date_debut::date, :date_fin::date, '[]')
               )
           )

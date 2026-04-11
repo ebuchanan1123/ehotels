@@ -335,6 +335,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return value;
   };
 
+  const normalizeReservationStatus = (status) => {
+    const value = `${status || ""}`.trim();
+    const normalized = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    if (normalized === "reservee") {
+      return "Réservée";
+    }
+    if (normalized === "confirmee") {
+      return "Confirmée";
+    }
+    if (normalized === "annulee") {
+      return "Annulée";
+    }
+    if (normalized === "convertie") {
+      return "Convertie";
+    }
+
+    return value;
+  };
+
   const setFieldError = (fieldId, message) => {
     const field = document.getElementById(fieldId);
     const error = document.getElementById(`${fieldId}_error`);
@@ -1957,7 +1977,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let employees = [];
-    const fields = ["employee_full_name", "employee_address", "employee_nas", "employee_role", "employee_hotel_id"];
+    const fields = ["employee_full_name", "employee_address", "employee_nas", "employee_id_search", "employee_role", "employee_hotel_id"];
     const createFields = [
       "create_employee_full_name",
       "create_employee_address",
@@ -1998,6 +2018,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (values.employee_nas?.trim() && !employee.nas.toLowerCase().includes(values.employee_nas.trim().toLowerCase())) {
+          return false;
+        }
+
+        if (values.employee_id_search && `${employee.id}` !== `${values.employee_id_search}`) {
           return false;
         }
 
@@ -2277,10 +2301,10 @@ document.addEventListener("DOMContentLoaded", () => {
                   <p><strong>Hôtel :</strong> ${reservation.hotelName}</p>
                   <p><strong>Date de réservation :</strong> ${formatDateFr(reservation.reservationDate)}</p>
                   <p><strong>Séjour :</strong> ${formatDateFr(reservation.startDate)} au ${formatDateFr(reservation.endDate)}</p>
-                  <p><strong>Statut :</strong> ${reservation.status || "N/D"}</p>
+                  <p><strong>Statut :</strong> ${normalizeReservationStatus(reservation.status) || "N/D"}</p>
                   <div class="data-card-actions">
                     <button type="button" class="btn btn-secondary" data-reservation-edit="${reservation.id}">Modifier</button>
-                    ${reservation.status && (reservation.status.toLowerCase() === 'confirmée' || reservation.status.toLowerCase() === 'réservée') ? `<button type="button" class="btn btn-primary" data-reservation-convert="${reservation.id}">Convertir</button>` : ""}
+                    ${reservation.status && ["Confirmée", "Réservée"].includes(normalizeReservationStatus(reservation.status)) ? `<button type="button" class="btn btn-primary" data-reservation-convert="${reservation.id}">Convertir</button>` : ""}
                   </div>
                 </article>
               `

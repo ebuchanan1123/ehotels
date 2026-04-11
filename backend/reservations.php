@@ -14,7 +14,7 @@ try {
 
     if ($method === 'GET') {
         $search = trim((string) ($_GET['q'] ?? ''));
-        $status = trim((string) ($_GET['status'] ?? ''));
+        $status = normalize_reservation_status((string) ($_GET['status'] ?? ''));
 
         $statement = $pdo->prepare(
             'SELECT
@@ -38,10 +38,10 @@ try {
                  OR TRIM(COALESCE(c.nom, \'\') || \' \' || COALESCE(c.prenom, \'\')) ILIKE :q_like
                  OR h.nom ILIKE :q_like
                  OR COALESCE(ch.nom_chambre, \'\') ILIKE :q_like
-             )
+               )
                AND (
                  :status = \'\'
-                 OR LOWER(COALESCE(r.statut, \'\')) = LOWER(:status)
+                 OR REPLACE(LOWER(COALESCE(r.statut, \'\')), \'é\', \'e\') = REPLACE(LOWER(:status), \'é\', \'e\')
                )
              ORDER BY r.date_reservation DESC, r.id_reservation DESC'
         );
@@ -58,7 +58,7 @@ try {
                 'startDate' => (string) $row['date_debut'],
                 'endDate' => (string) $row['date_fin'],
                 'reservationDate' => (string) $row['date_reservation'],
-                'status' => (string) ($row['statut'] ?? ''),
+                'status' => normalize_reservation_status((string) ($row['statut'] ?? '')),
                 'clientId' => (int) $row['id_client'],
                 'clientName' => (string) ($row['nom_client'] ?? ''),
                 'roomId' => (int) $row['id_chambre'],
@@ -113,7 +113,7 @@ try {
                     'id' => (int) $updated['id_reservation'],
                     'startDate' => (string) $updated['date_debut'],
                     'endDate' => (string) $updated['date_fin'],
-                    'status' => (string) ($updated['statut'] ?? ''),
+                    'status' => normalize_reservation_status((string) ($updated['statut'] ?? '')),
                 ],
             ]);
         } else {
