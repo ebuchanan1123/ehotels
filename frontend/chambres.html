@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gérer les chambres - eHotels</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>eHotels</h1>
+      <p class="subtitle">Gérer les dossiers de chambres et les informations de disponibilité</p>
+      <nav class="nav nav-organized">
+        <a href="index.html">Accueil</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h2>Gérer les chambres</h2>
+      <p>Recherchez les chambres existantes et mettez à jour leurs informations au besoin.</p>
+    </section>
+
+    <section class="form-section">
+      <form class="management-form" id="roomManagementForm">
+        <div class="form-status" id="roomStatus" aria-live="polite"></div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="managed_room_id">ID technique</label>
+            <input type="number" id="managed_room_id" name="managed_room_id" placeholder="Automatique en création" readonly />
+            <p class="field-error" id="managed_room_id_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_name">Nom de la chambre</label>
+            <input type="text" id="managed_room_name" name="managed_room_name" placeholder="Ex. Suite Deluxe" />
+            <p class="field-error" id="managed_room_name_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_number">Numéro de chambre</label>
+            <input type="number" id="managed_room_number" name="managed_room_number" placeholder="Ex. 405" />
+            <p class="field-error" id="managed_room_number_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_hotel_id">Hôtel</label>
+            <select id="managed_room_hotel_id" name="managed_room_hotel_id">
+              <option value="">Sélectionnez un hôtel</option>
+            </select>
+            <p class="field-error" id="managed_room_hotel_id_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_capacity">Capacité</label>
+            <select id="managed_room_capacity" name="managed_room_capacity">
+              <option value="">Sélectionnez une capacité</option>
+              <option value="simple">Simple</option>
+              <option value="double">Double</option>
+              <option value="family">Familiale</option>
+            </select>
+            <p class="field-error" id="managed_room_capacity_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_count">Nombre de chambres</label>
+            <input type="number" id="managed_room_count" name="managed_room_count" min="1" value="1" />
+            <p class="field-error" id="managed_room_count_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_area">Superficie (m²)</label>
+            <input type="number" id="managed_room_area" name="managed_room_area" placeholder="Entrez la superficie" />
+            <p class="field-error" id="managed_room_area_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_price">Prix par nuit</label>
+            <input type="number" id="managed_room_price" name="managed_room_price" placeholder="Entrez le prix" />
+            <p class="field-error" id="managed_room_price_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_view">Type de vue</label>
+            <input type="text" id="managed_room_view" name="managed_room_view" placeholder="Ville, mer, jardin..." />
+            <p class="field-error" id="managed_room_view_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_extension">Extensible</label>
+            <select id="managed_room_extension" name="managed_room_extension">
+              <option value="">Sélectionnez une option</option>
+              <option value="yes">Oui</option>
+              <option value="no">Non</option>
+            </select>
+            <p class="field-error" id="managed_room_extension_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_state">État</label>
+            <input type="text" id="managed_room_state" name="managed_room_state" placeholder="Excellent, entretien, etc." />
+            <p class="field-error" id="managed_room_state_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="managed_room_amenities">Commodités</label>
+            <input type="text" id="managed_room_amenities" name="managed_room_amenities" placeholder="Wi-Fi, TV, climatisation..." />
+            <p class="field-error" id="managed_room_amenities_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Rechercher</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">
+        <div>
+          <h3>Chambres gérées</h3>
+          <p>Gestion à temps réel des chambres.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="openRoomCreateModal">Ajouter nouvelle chambre</button>
+      </div>
+
+      <div class="management-grid" id="roomResults"></div>
+    </section>
+
+  </main>
+
+  <div class="modal-overlay" id="roomCreateModal" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <h3>Ajouter une chambre</h3>
+          <p>Entrez les informations nécessaires pour créer une nouvelle chambre.</p>
+        </div>
+        <button type="button" class="modal-close" data-modal-close="roomCreateModal" aria-label="Fermer">×</button>
+      </div>
+      <form class="management-form" id="roomCreateForm">
+        <div class="form-status" id="roomCreateStatus" aria-live="polite"></div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="create_room_name">Nom de la chambre</label>
+            <input type="text" id="create_room_name" name="managed_room_name" placeholder="Ex. Suite Deluxe" required />
+            <p class="field-error" id="create_room_name_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_number">Numéro de chambre</label>
+            <input type="number" id="create_room_number" name="managed_room_number" placeholder="Ex. 405" required />
+            <p class="field-error" id="create_room_number_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_hotel_id">Hôtel</label>
+            <select id="create_room_hotel_id" name="managed_room_hotel_id" required>
+              <option value="">Sélectionnez un hôtel</option>
+            </select>
+            <p class="field-error" id="create_room_hotel_id_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_capacity">Capacité</label>
+            <select id="create_room_capacity" name="managed_room_capacity" required>
+              <option value="">Sélectionnez une capacité</option>
+              <option value="simple">Simple</option>
+              <option value="double">Double</option>
+              <option value="family">Familiale</option>
+            </select>
+            <p class="field-error" id="create_room_capacity_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_count">Nombre de chambres</label>
+            <input type="number" id="create_room_count" name="managed_room_count" min="1" value="1" required />
+            <p class="field-error" id="create_room_count_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_area">Superficie (m²)</label>
+            <input type="number" id="create_room_area" name="managed_room_area" placeholder="Entrez la superficie" required />
+            <p class="field-error" id="create_room_area_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_price">Prix par nuit</label>
+            <input type="number" id="create_room_price" name="managed_room_price" placeholder="Entrez le prix" required />
+            <p class="field-error" id="create_room_price_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_view">Type de vue</label>
+            <input type="text" id="create_room_view" name="managed_room_view" placeholder="Ville, mer, jardin..." />
+            <p class="field-error" id="create_room_view_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_extension">Extensible</label>
+            <select id="create_room_extension" name="managed_room_extension" required>
+              <option value="">Sélectionnez une option</option>
+              <option value="yes">Oui</option>
+              <option value="no">Non</option>
+            </select>
+            <p class="field-error" id="create_room_extension_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_state">État</label>
+            <input type="text" id="create_room_state" name="managed_room_state" placeholder="Excellent, entretien, etc." />
+            <p class="field-error" id="create_room_state_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_room_amenities">Commodités</label>
+            <input type="text" id="create_room_amenities" name="managed_room_amenities" placeholder="Wi-Fi, TV, climatisation..." />
+            <p class="field-error" id="create_room_amenities_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer la chambre</button>
+          <button type="button" class="btn btn-secondary" data-modal-close="roomCreateModal">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="roomEditModal" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <h3>Modifier la chambre</h3>
+          <p>Le nom, le numéro et l'hôtel restent fixes pendant la modification.</p>
+        </div>
+        <button type="button" class="modal-close" data-modal-close="roomEditModal" aria-label="Fermer">×</button>
+      </div>
+      <form class="management-form" id="roomEditForm">
+        <div class="form-status" id="roomEditStatus" aria-live="polite"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit_room_id">ID technique</label>
+            <input type="number" id="edit_room_id" readonly class="input-locked" />
+            <p class="field-error" id="edit_room_id_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_name">Nom de la chambre</label>
+            <input type="text" id="edit_room_name" readonly class="input-locked" />
+            <p class="field-error" id="edit_room_name_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_number">Numéro de chambre</label>
+            <input type="number" id="edit_room_number" readonly class="input-locked" />
+            <p class="field-error" id="edit_room_number_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_hotel_id">Hôtel</label>
+            <select id="edit_room_hotel_id" disabled class="input-locked">
+              <option value="">Sélectionnez un hôtel</option>
+            </select>
+            <p class="field-error" id="edit_room_hotel_id_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_capacity">Capacité</label>
+            <select id="edit_room_capacity" required>
+              <option value="">Sélectionnez une capacité</option>
+              <option value="simple">Simple</option>
+              <option value="double">Double</option>
+              <option value="family">Familiale</option>
+            </select>
+            <p class="field-error" id="edit_room_capacity_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_count">Nombre de chambres</label>
+            <input type="number" id="edit_room_count" min="1" />
+            <p class="field-error" id="edit_room_count_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_area">Superficie (m²)</label>
+            <input type="number" id="edit_room_area" />
+            <p class="field-error" id="edit_room_area_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_price">Prix par nuit</label>
+            <input type="number" id="edit_room_price" />
+            <p class="field-error" id="edit_room_price_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_view">Type de vue</label>
+            <input type="text" id="edit_room_view" />
+            <p class="field-error" id="edit_room_view_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_extension">Extensible</label>
+            <select id="edit_room_extension" required>
+              <option value="">Sélectionnez une option</option>
+              <option value="yes">Oui</option>
+              <option value="no">Non</option>
+            </select>
+            <p class="field-error" id="edit_room_extension_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_state">État</label>
+            <input type="text" id="edit_room_state" />
+            <p class="field-error" id="edit_room_state_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_room_amenities">Commodités</label>
+            <input type="text" id="edit_room_amenities" />
+            <p class="field-error" id="edit_room_amenities_error"></p>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+          <button type="button" class="btn btn-secondary" data-modal-close="roomEditModal">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>

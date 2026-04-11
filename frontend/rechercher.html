@@ -11,14 +11,25 @@
     <div class="container">
       <h1>eHotels</h1>
       <p class="subtitle">Rechercher des chambres disponibles</p>
-      <nav class="nav">
+      <nav class="nav nav-organized">
         <a href="index.html">Accueil</a>
-        <a href="search.html">Rechercher</a>
-        <a href="reserve.html">Réserver</a>
-        <a href="rent.html">Louer</a>
-        <a href="convert.html">Convertir</a>
-        <a href="manage-clients.html">Clients</a>
-        <a href="manage-rooms.html">Chambres</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -59,7 +70,7 @@
           <div class="form-group">
             <label for="capacite">Capacité</label>
             <select id="capacite" name="capacite">
-              <option value="">Peu importe</option>
+              <option value="">Toutes</option>
               <option value="simple">Simple</option>
               <option value="double">Double</option>
               <option value="family">Familiale</option>
@@ -69,7 +80,7 @@
           <div class="form-group">
             <label for="chaine">Chaîne hôtelière</label>
             <select id="chaine" name="chaine">
-              <option value="">Peu importe</option>
+              <option value="">Toutes</option>
               <option value="luxstay">LuxStay</option>
               <option value="northernsuites">Northern Suites</option>
               <option value="urbanrest">Urban Rest</option>
@@ -79,11 +90,11 @@
           <div class="form-group">
             <label for="categorie">Catégorie</label>
             <select id="categorie" name="categorie">
-              <option value="">Peu importe</option>
-              <option value="1">1 étoile</option>
-              <option value="2">2 étoiles</option>
-              <option value="3">3 étoiles</option>
-              <option value="4">4 étoiles</option>
+              <option value="">Toutes</option>
+              <option value="1">1+ étoile</option>
+              <option value="2">2+ étoiles</option>
+              <option value="3">3+ étoiles</option>
+              <option value="4">4+ étoiles</option>
               <option value="5">5 étoiles</option>
             </select>
           </div>
@@ -120,15 +131,6 @@
       <div class="results-grid" id="resultsGrid"></div>
     </section>
 
-    <section class="info-panel">
-      <h3>Fonctionnement de la recherche</h3>
-      <p>
-        Cette page filtre maintenant les résultats directement dans le frontend.
-        Vous pouvez maintenant filtrer par localisation et par hôtel, puis comparer les chambres
-        disponibles regroupées par établissement. Plus tard, les mêmes champs pourront être connectés
-        à votre backend PHP et à vos requêtes PostgreSQL.
-      </p>
-    </section>
   </main>
 
   <script src="assets/script.js"></script>

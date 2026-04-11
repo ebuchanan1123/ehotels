@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Réservations existantes - eHotels</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>eHotels</h1>
+      <p class="subtitle">Consulter les réservations enregistrées</p>
+      <nav class="nav nav-organized">
+        <a href="index.html">Accueil</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h2>Réservations existantes</h2>
+      <p>Recherchez rapidement les réservations déjà enregistrées dans le système.</p>
+    </section>
+
+    <section class="form-section">
+      <form class="management-form" id="reservationSearchForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="reservation_query">Recherche</label>
+            <input type="text" id="reservation_query" name="reservation_query" placeholder="ID, client, hôtel ou chambre" />
+          </div>
+
+          <div class="form-group">
+            <label for="reservation_status_filter">Statut</label>
+            <select id="reservation_status_filter" name="reservation_status_filter">
+              <option value="">Tous les statuts</option>
+              <option value="réservée">Réservée</option>
+              <option value="convertie">Convertie</option>
+              <option value="annulée">Annulée</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Rechercher</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">
+        <h3>Résultats</h3>
+        <p id="reservationResultsSummary">Chargement des réservations...</p>
+      </div>
+
+      <div class="management-grid" id="reservationResults"></div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="reservationEditModal" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <h3>Modifier la réservation</h3>
+          <p>Modifiez les dates de la réservation.</p>
+        </div>
+        <button type="button" class="modal-close" data-modal-close="reservationEditModal" aria-label="Fermer">×</button>
+      </div>
+      <form class="management-form" id="reservationEditForm">
+        <div class="form-status" id="reservationEditStatus" aria-live="polite"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit_reservation_id">ID</label>
+            <input type="number" id="edit_reservation_id" readonly class="input-locked" />
+            <p class="field-error" id="edit_reservation_id_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_reservation_client">Client</label>
+            <input type="text" id="edit_reservation_client" readonly class="input-locked" />
+            <p class="field-error" id="edit_reservation_client_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_reservation_room">Chambre</label>
+            <input type="text" id="edit_reservation_room" readonly class="input-locked" />
+            <p class="field-error" id="edit_reservation_room_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_reservation_start_date">Date de début</label>
+            <input type="date" id="edit_reservation_start_date" />
+            <p class="field-error" id="edit_reservation_start_date_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_reservation_end_date">Date de fin</label>
+            <input type="date" id="edit_reservation_end_date" />
+            <p class="field-error" id="edit_reservation_end_date_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+          <button type="reset" class="btn btn-secondary">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="reservationConvertModal" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <h3>Convertir la réservation en location</h3>
+          <p>Complétez le processus d'arrivée pour convertir cette réservation.</p>
+        </div>
+        <button type="button" class="modal-close" data-modal-close="reservationConvertModal" aria-label="Fermer">×</button>
+      </div>
+      <form class="management-form" id="reservationConvertForm">
+        <div class="form-status" id="reservationConvertStatus" aria-live="polite"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="convert_reservation_id">ID de la réservation</label>
+            <input type="number" id="convert_reservation_id" readonly class="input-locked" />
+            <p class="field-error" id="convert_reservation_id_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="convert_reservation_client">Client</label>
+            <input type="text" id="convert_reservation_client" readonly class="input-locked" />
+            <p class="field-error" id="convert_reservation_client_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="convert_employee_id">ID de l'employé</label>
+            <input type="number" id="convert_employee_id" name="employee_id" placeholder="Entrez l'ID de l'employé" required />
+            <p class="field-error" id="convert_employee_id_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="convert_checkin_date">Date d'arrivée</label>
+            <input type="date" id="convert_checkin_date" name="checkin_date" required />
+            <p class="field-error" id="convert_checkin_date_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="convert_notes">Notes</label>
+            <input type="text" id="convert_notes" name="notes" placeholder="Notes optionnelles" />
+            <p class="field-error" id="convert_notes_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Convertir</button>
+          <button type="reset" class="btn btn-secondary">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>

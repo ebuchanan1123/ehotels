@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Locations existantes - eHotels</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>eHotels</h1>
+      <p class="subtitle">Consulter les locations enregistrées</p>
+      <nav class="nav nav-organized">
+        <a href="index.html">Accueil</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h2>Locations existantes</h2>
+      <p>Consultez les séjours réellement enregistrés et leur employé responsable.</p>
+    </section>
+
+    <section class="form-section">
+      <form class="management-form" id="locationSearchForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="location_query">Recherche</label>
+            <input type="text" id="location_query" name="location_query" placeholder="ID, réservation, client, hôtel ou employé" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Rechercher</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">
+        <h3>Résultats</h3>
+        <p id="locationResultsSummary">Chargement des locations...</p>
+      </div>
+
+      <div class="management-grid" id="locationResults"></div>
+    </section>
+  </main>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>

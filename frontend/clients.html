@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gérer les clients - eHotels</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>eHotels</h1>
+      <p class="subtitle">Gérer les dossiers clients</p>
+      <nav class="nav nav-organized">
+        <a href="index.html">Accueil</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-header">
+      <h2>Gérer les clients</h2>
+      <p>Créez, mettez à jour et consultez les informations clients.</p>
+    </section>
+
+    <section class="form-section">
+      <form class="management-form" id="clientManagementForm">
+        <div class="form-status" id="clientStatus" aria-live="polite"></div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="client_full_name">Nom complet</label>
+            <input type="text" id="client_full_name" name="client_full_name" placeholder="Entrez le nom complet" />
+            <p class="field-error" id="client_full_name_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_address">Adresse</label>
+            <input type="text" id="client_address" name="client_address" placeholder="Entrez l'adresse" />
+            <p class="field-error" id="client_address_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_nas_number">NAS / SSN</label>
+            <input type="text" id="client_nas_number" name="client_nas_number" placeholder="Entrez le NAS / SSN" />
+            <p class="field-error" id="client_nas_number_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_id_search">ID client</label>
+            <input type="number" id="client_id_search" name="client_id_search" placeholder="Entrez l'ID client" />
+            <p class="field-error" id="client_id_search_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="client_registration_date">Date d'inscription</label>
+            <input type="date" id="client_registration_date" name="client_registration_date" />
+            <p class="field-error" id="client_registration_date_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Rechercher</button>
+          <button type="reset" class="btn btn-secondary">Effacer</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">
+        <div>
+          <h3>Clients actuels</h3>
+          <p>Zone de gestion des clients.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="openClientCreateModal">Ajouter nouveau client</button>
+      </div>
+
+      <div class="management-grid" id="clientResults"></div>
+    </section>
+
+  </main>
+
+  <div class="modal-overlay" id="clientCreateModal" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <h3>Ajouter un client</h3>
+          <p>Entrez les informations nécessaires pour créer un nouveau client.</p>
+        </div>
+        <button type="button" class="modal-close" data-modal-close="clientCreateModal" aria-label="Fermer">×</button>
+      </div>
+      <form class="management-form" id="clientCreateForm">
+        <div class="form-status" id="clientCreateStatus" aria-live="polite"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="create_client_full_name">Nom complet</label>
+            <input type="text" id="create_client_full_name" name="client_full_name" placeholder="Entrez le nom complet" required />
+            <p class="field-error" id="create_client_full_name_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_client_address">Adresse</label>
+            <input type="text" id="create_client_address" name="client_address" placeholder="Entrez l'adresse" required />
+            <p class="field-error" id="create_client_address_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_client_email">Courriel</label>
+            <input type="email" id="create_client_email" name="client_email" placeholder="nom@exemple.com" required />
+            <p class="field-error" id="create_client_email_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_client_nas_number">NAS / SSN</label>
+            <input type="text" id="create_client_nas_number" name="client_nas_number" placeholder="Entrez le NAS / SSN" required />
+            <p class="field-error" id="create_client_nas_number_error"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="create_client_registration_date">Date d'inscription</label>
+            <input type="date" id="create_client_registration_date" name="client_registration_date" required />
+            <p class="field-error" id="create_client_registration_date_error"></p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer le client</button>
+          <button type="button" class="btn btn-secondary" data-modal-close="clientCreateModal">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="clientEditModal" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <h3>Modifier le client</h3>
+          <p>Le nom, le NAS et la date d'inscription restent fixes.</p>
+        </div>
+        <button type="button" class="modal-close" data-modal-close="clientEditModal" aria-label="Fermer">×</button>
+      </div>
+      <form class="management-form" id="clientEditForm">
+        <div class="form-status" id="clientEditStatus" aria-live="polite"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit_client_full_name">Nom complet</label>
+            <input type="text" id="edit_client_full_name" readonly class="input-locked" />
+            <p class="field-error" id="edit_client_full_name_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_client_id">ID client</label>
+            <input type="number" id="edit_client_id" readonly class="input-locked" />
+            <p class="field-error" id="edit_client_id_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_client_address">Adresse</label>
+            <input type="text" id="edit_client_address" required />
+            <p class="field-error" id="edit_client_address_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_client_email">Courriel</label>
+            <input type="email" id="edit_client_email" required />
+            <p class="field-error" id="edit_client_email_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_client_nas_number">NAS / SSN</label>
+            <input type="text" id="edit_client_nas_number" readonly class="input-locked" />
+            <p class="field-error" id="edit_client_nas_number_error"></p>
+          </div>
+          <div class="form-group">
+            <label for="edit_client_registration_date">Date d'inscription</label>
+            <input type="date" id="edit_client_registration_date" readonly class="input-locked" />
+            <p class="field-error" id="edit_client_registration_date_error"></p>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+          <button type="button" class="btn btn-secondary" data-modal-close="clientEditModal">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>

@@ -11,14 +11,25 @@
     <div class="container">
       <h1>eHotels</h1>
       <p class="subtitle">Créer une réservation</p>
-      <nav class="nav">
+      <nav class="nav nav-organized">
         <a href="index.html">Accueil</a>
-        <a href="search.html">Rechercher</a>
-        <a href="reserve.html">Réserver</a>
-        <a href="rent.html">Louer</a>
-        <a href="convert.html">Convertir</a>
-        <a href="manage-clients.html">Clients</a>
-        <a href="manage-rooms.html">Chambres</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Opérations</button>
+          <div class="nav-dropdown-menu">
+            <a href="rechercher.html">Rechercher</a>
+            <a href="louer.html">Louer</a>
+            <a href="reservations.html">Réservations</a>
+            <a href="locations.html">Locations</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle">Gestion</button>
+          <div class="nav-dropdown-menu">
+            <a href="clients.html">Clients</a>
+            <a href="employes.html">Employés</a>
+            <a href="hotels.html">Hôtels</a>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -32,6 +43,10 @@
     <section class="form-section">
       <form class="reservation-form" id="reservationForm">
         <div class="form-status" id="reservationStatus" aria-live="polite"></div>
+
+        <div class="selected-room-card is-empty" id="selectedRoomSummary">
+          <p>Choisissez une chambre depuis la recherche pour voir ses détails ici.</p>
+        </div>
 
         <div class="form-grid">
           <div class="form-group">
@@ -54,7 +69,8 @@
 
           <div class="form-group">
             <label for="id_chambre">ID de la chambre</label>
-            <input type="number" id="id_chambre" name="id_chambre" placeholder="Entrez l'ID de la chambre" required />
+            <input type="number" id="id_chambre" name="id_chambre" placeholder="Sélection automatique" required readonly />
+            <p class="field-hint">Ce champ est rempli automatiquement à partir de la chambre choisie.</p>
             <p class="field-error" id="id_chambre_error"></p>
           </div>
 
@@ -76,13 +92,6 @@
           <button type="reset" class="btn btn-secondary">Effacer</button>
         </div>
       </form>
-    </section>
-
-    <section class="info-panel">
-      <h3>Résumé de la réservation</h3>
-      <div class="summary-list" id="reservationSummary">
-        <p>Complétez le formulaire pour prévisualiser les détails avant l'envoi.</p>
-      </div>
     </section>
   </main>
 
