@@ -2321,6 +2321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const editModal = createModalController("reservationEditModal");
     const convertModal = createModalController("reservationConvertModal");
     const editForm = document.getElementById("reservationEditForm");
+    const cancelReservationButton = document.getElementById("cancelReservationButton");
     const convertForm = document.getElementById("reservationConvertForm");
     const editStatus = document.getElementById("reservationEditStatus");
     const convertStatus = document.getElementById("reservationConvertStatus");
@@ -2460,6 +2461,35 @@ document.addEventListener("DOMContentLoaded", () => {
           editFields.forEach((field) => setFieldError(field, ""));
           clearStatus(editStatus);
         }, 0);
+      });
+
+      cancelReservationButton?.addEventListener("click", () => {
+        const reservationId = editForm.dataset.editingId;
+
+        if (!reservationId) {
+          return;
+        }
+
+        if (!confirmDangerAction("Annuler cette réservation? Elle restera dans le système avec le statut Annulée.")) {
+          return;
+        }
+
+        apiRequest("reservations.php", {
+          method: "PUT",
+          body: {
+            reservation_id: reservationId,
+            status: "Annulée"
+          }
+        })
+          .then(() => {
+            editModal.close();
+            loadReservations();
+            showToast("Réservation annulée avec succès.");
+          })
+          .catch((error) => {
+            showStatus(editStatus, error.message, "is-error");
+            showToast(error.message, "error");
+          });
       });
     }
 
