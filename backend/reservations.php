@@ -75,6 +75,7 @@ try {
         $payload = read_json_body();
 
         $reservationId = isset($payload['reservation_id']) ? (int) $payload['reservation_id'] : null;
+        $normalizedStatus = normalize_reservation_status((string) ($payload['status'] ?? ''));
 
         if (!$reservationId) {
             json_response(['error' => 'ID de réservation manquant.'], 400);
@@ -92,7 +93,9 @@ try {
 
         $updateStatement = $pdo->prepare(
             'UPDATE reservation
-             SET date_debut = :date_debut, date_fin = :date_fin
+             SET date_debut = COALESCE(:date_debut, date_debut),
+                 date_fin = COALESCE(:date_fin, date_fin),
+                 statut = COALESCE(:statut, statut)
              WHERE id_reservation = :id
              RETURNING id_reservation, date_debut, date_fin, statut'
         );
@@ -100,6 +103,7 @@ try {
         $updateStatement->execute([
             ':date_debut' => $payload['start_date'] ?? null,
             ':date_fin' => $payload['end_date'] ?? null,
+            ':statut' => $normalizedStatus !== '' ? $normalizedStatus : null,
             ':id' => $reservationId,
         ]);
 
